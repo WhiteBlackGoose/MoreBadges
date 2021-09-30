@@ -2,7 +2,14 @@
 
 Just a few collection of badges which this world lacked.
 
-The required parameter: `badge`.
+#### API & Parameters
+
+URL:
+```
+https://morebadges.tk/?badge=nugetdownloads&user=dotnetfoundation
+```
+
+`badge` is the required. All other parameters depend on the particular badge.
 
 More info coming soon (this should be hosted somewhere).
 
