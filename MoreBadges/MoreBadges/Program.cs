@@ -20,8 +20,23 @@ while (true)
     var context = server.GetContext();
     var request = context.Request;
     var response = context.Response;
-    
-    runningTasks.Add(NugetRespondToRequest(response, request.QueryString, logger, nugetBadgeInfo));
+    var query = request.QueryString;
+
+    var task = query["badge"] switch
+    {
+        "downloads" => NugetRespondToRequest(response, query, logger, nugetBadgeInfo),
+        _ => null
+    };
+
+    if (task is not null)
+        runningTasks.Add(task);
+    else
+    {
+        if (query["badge"] is null)
+            ProcessResponse(Serializer.Encode(new { Error = "You should pass 'badge' parameter" }), response);
+        else
+            ProcessResponse(Serializer.Encode(new { Error = $"Unrecognized badge {query["badge"]}" }), response);
+    }
 
     logger.LogInformation($"Currently running tasks: {runningTasks.CountRunning()}");
 }
