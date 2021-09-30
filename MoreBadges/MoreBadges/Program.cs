@@ -10,6 +10,8 @@ var cachePath = args.Length > 0 ? args[0] : "./caches";
 
 ILogger logger = new DebugLogger();
 logger.LogInformation($"Using path {cachePath} for caching");
+logger.LogInformation($"Absolute path for caching: {Path.GetFullPath(cachePath)}");
+
 
 IWriterReader writerReader = new DebugWriterReader(cachePath, logger);
 
