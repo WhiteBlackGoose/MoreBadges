@@ -27,19 +27,22 @@ public sealed record DefaultWriterReader(string Path) : IWriterReader
     }
 }
 
-public sealed record DebugWriterReader(string Path) : IWriterReader
+public sealed record DebugWriterReader(string Path, ILogger Logger) : IWriterReader
 {
     private readonly DefaultWriterReader defWR = new(Path);
 
     public void Write(string host, string key, string value)
     {
-        Console.WriteLine($"Requested to write. Host: {host}. Key: {key}. Value: {value}");
+        Logger.LogInformation($"Requested to write. Host: {host}. Key: {key}. Value: {value}");
         defWR.Write(host, key, value);
     }
 
     public string? Read(string host, string key)
     {
-        return defWR.Read(host, key);
+        var res = defWR.Read(host, key);
+        if (res is not null)
+            Logger.LogInformation($"Found cache on {host}:{key}");
+        return res;
     }
 }
 

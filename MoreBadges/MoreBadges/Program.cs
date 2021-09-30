@@ -1,17 +1,15 @@
-﻿// See https://aka.ms/new-console-template for more information
-using NuGet.Common;
+﻿using NuGet.Common;
+using System.Collections.Specialized;
 using System.Net;
 
 using var server = new HttpListener();
 
-var a = new List<int>();
-
-// netsh http add urlacl url=http://+:11456/ user=DESKTOP-1IF9LEB\goose
-// server.Prefixes.Add("http://+:11456/");
 server.Prefixes.Add("http://+:11456/");
 
-IWriterReader writerReader = new DebugWriterReader("./caches");
 ILogger logger = new DebugLogger();
+IWriterReader writerReader = new DebugWriterReader("./caches", logger);
+
+var runningTasks = new RunningTasksCollection();
 
 var nugetBadgeInfo = new NugetGetDownloadsInfo(writerReader, logger);
 
@@ -22,24 +20,36 @@ while (true)
     var context = server.GetContext();
     var request = context.Request;
     var response = context.Response;
-    var user = request.QueryString["user"];
+    
+    runningTasks.Add(NugetRespondToRequest(response, request.QueryString, logger, nugetBadgeInfo));
+
+    logger.LogInformation($"Currently running tasks: {runningTasks.CountRunning()}");
+}
+
+#pragma warning disable CS0162 // Unreachable code detected
+server.Stop();
+#pragma warning restore CS0162 // Unreachable code detected
+
+static async Task NugetRespondToRequest(HttpListenerResponse response, NameValueCollection args, ILogger logger, NugetGetDownloadsInfo nugetBadgeInfo)
+{
+    var user = args["user"];
 
     if (user is null)
     {
         logger.LogWarning("User is missing, skipping");
-        continue;
+        return;
     }
 
-    var responseString = nugetBadgeInfo.GetInfo(user);
+    var responseString = await nugetBadgeInfo.GetInfo(user);
+    ProcessResponse(responseString, response);
+}
 
+static void ProcessResponse(string responseString, HttpListenerResponse response)
+{
     byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
     response.ContentLength64 = buffer.Length;
-    System.IO.Stream output = response.OutputStream;
+    Stream output = response.OutputStream;
     response.Headers.Add("content-type", "application/json");
     output.Write(buffer, 0, buffer.Length);
     output.Close();
 }
-// response.ContentType = "image/svg+xml";
-// You must close the output stream.
-
-server.Stop();

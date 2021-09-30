@@ -11,7 +11,7 @@ public sealed record NeatNumberPair(string Normal, string Short)
             > 1_000_000_000 => $"{number / 100_000_000 / 10.0:F1}B",
             > 1_000_000     => $"{number / 100_000     / 10.0:F1}M",
             > 1_000         => $"{number / 100         / 10.0:F1}K",
-            var other       => $"{number}"
+            _               => $"{number}"
         };
         return new(number.ToString(), shortMessage);
     }
@@ -27,21 +27,21 @@ public sealed class NugetGetDownloadsInfo : GetInfoAboutBadge<string, NeatNumber
         this.logger = logger;
     }
 
-    protected override NeatNumberPair GetInfoActive(string parameters)
+    protected override async Task<NeatNumberPair> GetInfoActive(string parameters)
     {
         CancellationToken cancellationToken = CancellationToken.None;
 
-        SourceRepository repository = Repository.Factory.GetCoreV3("https://api.nuget.org/v3/index.json");
-        PackageSearchResource resource = repository.GetResource<PackageSearchResource>();
-        SearchFilter searchFilter = new SearchFilter(includePrerelease: true);
+        var repository = Repository.Factory.GetCoreV3("https://api.nuget.org/v3/index.json");
+        var resource = await repository.GetResourceAsync<PackageSearchResource>();
+        var searchFilter = new SearchFilter(includePrerelease: true);
 
-        IEnumerable<IPackageSearchMetadata> results = resource.SearchAsync(
+        var results = await resource.SearchAsync(
             $"owner:{parameters}",
             searchFilter,
             skip: 0,
-            take: 20,
+            take: 100,
             logger,
-            cancellationToken).Result;
+            cancellationToken);
 
         var res = results.Select(r => r.DownloadCount).Sum() ?? throw new("Can't be null");
         return NeatNumberPair.FromLong(res);

@@ -1,6 +1,6 @@
 ﻿public abstract class GetInfoAboutBadge<TKey, TValue>
 {
-    protected abstract TValue GetInfoActive(TKey parameters);
+    protected abstract Task<TValue> GetInfoActive(TKey parameters);
     protected abstract string EncodeKey(TKey key);
 
     private readonly string name;
@@ -33,12 +33,12 @@
         return encoded;
     }
 
-    public string GetInfo(TKey parameters)
+    public async Task<string> GetInfo(TKey parameters)
     {
         var key = EncodeKey(parameters);
         if (GetValidatedValue(key) is { } res)
             return res;
-        var value = GetInfoActive(parameters);
+        var value = await GetInfoActive(parameters);
         return CacheAndReturnEncodedValue(key, value);
     }
 }
