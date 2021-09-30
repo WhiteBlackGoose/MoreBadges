@@ -24,7 +24,7 @@ while (true)
 
     var task = query["badge"] switch
     {
-        "downloads" => NugetRespondToRequest(response, query, logger, nugetBadgeInfo),
+        "nugetdownloads" => NugetRespondToRequest(response, query, logger, nugetBadgeInfo),
         _ => null
     };
 

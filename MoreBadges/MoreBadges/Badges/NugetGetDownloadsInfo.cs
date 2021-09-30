@@ -29,7 +29,7 @@ public sealed class NugetGetDownloadsInfo : GetInfoAboutBadge<string, NeatNumber
 
     protected override async Task<NeatNumberPair> GetInfoActive(string parameters)
     {
-        CancellationToken cancellationToken = CancellationToken.None;
+        var cancellationToken = CancellationToken.None;
 
         var repository = Repository.Factory.GetCoreV3("https://api.nuget.org/v3/index.json");
         var resource = await repository.GetResourceAsync<PackageSearchResource>();
