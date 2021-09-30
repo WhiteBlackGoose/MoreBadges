@@ -34,7 +34,13 @@ Example for Microsoft:
 
 ![Badge sample](https://img.shields.io/badge/dynamic/json?url=https%3A//morebadges.tk/%3fbadge=nugetdownloads%26user%3dmicrosoft&query=Short&label=Nuget+downloads&color=purple&style=flat-square&logo=nuget)
 
+You can also use a format without shortening:
 
+```
+https://img.shields.io/badge/dynamic/json?url=https%3A//morebadges.tk/%3fbadge=nugetdownloads%26user%3dmicrosoft&query=Normal&label=Nuget+downloads&color=purple&style=flat-square&logo=nuget
+```
+
+![Badge sample](https://img.shields.io/badge/dynamic/json?url=https%3A//morebadges.tk/%3fbadge=nugetdownloads%26user%3dmicrosoft&query=Normal&label=Nuget+downloads&color=purple&style=flat-square&logo=nuget)
 
 ## Hosting
 
