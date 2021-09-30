@@ -39,7 +39,7 @@ public sealed class NugetGetDownloadsInfo : GetInfoAboutBadge<string, NeatNumber
             $"owner:{parameters}",
             searchFilter,
             skip: 0,
-            take: 100,
+            take: 1000,
             logger,
             cancellationToken);
 
