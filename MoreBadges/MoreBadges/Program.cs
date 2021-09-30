@@ -6,11 +6,14 @@ using var server = new HttpListener();
 
 server.Prefixes.Add("http://+:11456/");
 
+var cachePath = args.Length > 0 ? args[0] : "./caches";
+
 ILogger logger = new DebugLogger();
-IWriterReader writerReader = new DebugWriterReader("./caches", logger);
+logger.LogInformation($"Using path {cachePath} for caching");
+
+IWriterReader writerReader = new DebugWriterReader(cachePath, logger);
 
 var runningTasks = new RunningTasksCollection();
-
 var nugetBadgeInfo = new NugetGetDownloadsInfo(writerReader, logger);
 
 server.Start();
@@ -29,9 +32,13 @@ while (true)
     };
 
     if (task is not null)
+    {
         runningTasks.Add(task);
+        logger.LogInformation($"Success {request.Url}");
+    }
     else
     {
+        logger.LogInformation($"Error {request.Url}");
         if (query["badge"] is null)
             ProcessResponse(Serializer.Encode(new { Error = "You should pass 'badge' parameter" }), response);
         else
