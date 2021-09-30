@@ -27,24 +27,24 @@ while (true)
     var response = context.Response;
     var query = request.QueryString;
 
-    var task = query["badge"] switch
+    BaseBadgeInfoGetter? runner = query["badge"] switch
     {
-        "nugetdownloads" => NugetRespondToRequest(response, query, logger, nugetBadgeInfo),
+        "nugetdownloads" => nugetBadgeInfo,
         _ => null
     };
 
-    if (task is not null)
+    if (runner is not null)
     {
-        runningTasks.Add(task);
+        runningTasks.Add(ProcessRequest(response, query, runner));
         logger.LogInformation($"Success {request.Url}");
     }
     else
     {
         logger.LogInformation($"Error {request.Url}");
         if (query["badge"] is null)
-            ProcessResponse(Serializer.Encode(new { Error = "You should pass 'badge' parameter" }), response);
+            Server.Respond(Serializer.Encode(new { Error = "You should pass 'badge' parameter" }), response);
         else
-            ProcessResponse(Serializer.Encode(new { Error = $"Unrecognized badge {query["badge"]}" }), response);
+            Server.Respond(Serializer.Encode(new { Error = $"Unrecognized badge {query["badge"]}" }), response);
     }
 
     logger.LogInformation($"Currently running tasks: {runningTasks.CountRunning()}");
@@ -54,26 +54,10 @@ while (true)
 server.Stop();
 #pragma warning restore CS0162 // Unreachable code detected
 
-static async Task NugetRespondToRequest(HttpListenerResponse response, NameValueCollection args, ILogger logger, NugetGetDownloadsInfo nugetBadgeInfo)
+static async Task ProcessRequest(HttpListenerResponse response, NameValueCollection args, BaseBadgeInfoGetter badgeInfoGetter)
 {
-    var user = args["user"];
-
-    if (user is null)
-    {
-        logger.LogWarning("User is missing, skipping");
+    var responseString = await badgeInfoGetter.RespondToRequest(args);
+    if (responseString is null)
         return;
-    }
-
-    var responseString = await nugetBadgeInfo.GetInfo(user);
-    ProcessResponse(responseString, response);
-}
-
-static void ProcessResponse(string responseString, HttpListenerResponse response)
-{
-    byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
-    response.ContentLength64 = buffer.Length;
-    Stream output = response.OutputStream;
-    response.Headers.Add("content-type", "application/json");
-    output.Write(buffer, 0, buffer.Length);
-    output.Close();
+    Server.Respond(responseString, response);
 }

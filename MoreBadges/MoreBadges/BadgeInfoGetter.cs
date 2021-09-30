@@ -1,4 +1,8 @@
-﻿public abstract class GetInfoAboutBadge<TKey, TValue>
+﻿using System.Net;
+using System.Collections.Specialized;
+using NuGet.Common;
+
+public abstract class BadgeInfoGetter<TKey, TValue> : BaseBadgeInfoGetter
 {
     protected abstract Task<TValue> GetInfoActive(TKey parameters);
     protected abstract string EncodeKey(TKey key);
@@ -7,7 +11,7 @@
     private readonly IWriterReader writerReader;
     private readonly TimeSpan cacheLifetime;
 
-    public GetInfoAboutBadge(string name, IWriterReader writerReader, TimeSpan cacheLifetime)
+    public BadgeInfoGetter(string name, IWriterReader writerReader, TimeSpan cacheLifetime)
     {
         this.name = name;
         this.writerReader = writerReader;
@@ -33,7 +37,7 @@
         return encoded;
     }
 
-    public async Task<string> GetInfo(TKey parameters)
+    protected async Task<string> GetInfo(TKey parameters)
     {
         var key = EncodeKey(parameters);
         if (GetValidatedValue(key) is { } res)

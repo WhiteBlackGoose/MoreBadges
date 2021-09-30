@@ -1,10 +1,12 @@
 ﻿using NuGet.Common;
 using NuGet.Protocol;
 using NuGet.Protocol.Core.Types;
+using System.Collections.Specialized;
+using System.Net;
 
-public sealed record NeatNumberPair(string Normal, string Short)
+public sealed record NugetInfo(string Normal, string Short, string Packages)
 {
-    public static NeatNumberPair FromLong(long number)
+    public static NugetInfo FromLong(long number, int packageCount)
     {
         var shortMessage = number switch
         {
@@ -13,21 +15,21 @@ public sealed record NeatNumberPair(string Normal, string Short)
             > 1_000         => $"{number / 100         / 10.0:F1} K",
             _               => $"{number}"
         };
-        return new(number.ToString(), shortMessage);
+        return new(number.ToString(), shortMessage, packageCount.ToString());
     }
 }
 
-public sealed class NugetGetDownloadsInfo : GetInfoAboutBadge<string, NeatNumberPair>
+public sealed class NugetGetDownloadsInfo : BadgeInfoGetter<string, NugetInfo>
 {
     private readonly ILogger logger;
 
     public NugetGetDownloadsInfo(IWriterReader writerReader, ILogger logger)
-        : base("nugetDownloadInfo", writerReader, TimeSpan.FromHours(12))
+        : base("nugetDownloadInfo", writerReader, TimeSpan.FromHours(3))
     {
         this.logger = logger;
     }
 
-    protected override async Task<NeatNumberPair> GetInfoActive(string parameters)
+    protected override async Task<NugetInfo> GetInfoActive(string parameters)
     {
         var cancellationToken = CancellationToken.None;
 
@@ -43,10 +45,30 @@ public sealed class NugetGetDownloadsInfo : GetInfoAboutBadge<string, NeatNumber
             logger,
             cancellationToken);
 
-        var res = results.Select(r => r.DownloadCount).Sum() ?? throw new("Can't be null");
-        return NeatNumberPair.FromLong(res);
+        var res = 0L;
+        var count = 0;
+        foreach (var r in results)
+        {
+            res += r.DownloadCount ?? throw new("Cannot be null");
+            count++;
+        }
+        return NugetInfo.FromLong(res, count);
     }
 
     protected override string EncodeKey(string key)
         => key;
+
+    public override async Task<string?> RespondToRequest(NameValueCollection args)
+    {
+        var user = args["user"];
+
+        if (user is null)
+        {
+            logger.LogWarning("User is missing, skipping");
+            return null;
+        }
+
+        var responseString = await GetInfo(user);
+        return responseString;
+    }
 }
