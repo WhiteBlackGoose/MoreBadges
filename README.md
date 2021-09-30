@@ -42,6 +42,13 @@ https://img.shields.io/badge/dynamic/json?url=https%3A//morebadges.tk/%3fbadge=n
 
 ![Badge sample](https://img.shields.io/badge/dynamic/json?url=https%3A//morebadges.tk/%3fbadge=nugetdownloads%26user%3dmicrosoft&query=Normal&label=Nuget+downloads&color=purple&style=flat-square&logo=nuget)
 
+Another format:
+
+```
+https://img.shields.io/badge/dynamic/json?url=https%3A//morebadges.tk/%3fbadge=nugetdownloads%26user%3dASC-Community&query=Short&label=NuGet+installs&logo=nuget&color=lightblue&style=social
+```
+![The number of downloads on nuget](https://img.shields.io/badge/dynamic/json?url=https%3A//morebadges.tk/%3fbadge=nugetdownloads%26user%3dASC-Community&query=Short&label=NuGet+installs&logo=nuget&color=lightblue&style=social)
+
 ## Hosting
 
 .NET 6 SDK needed to build that thing. Also make sure to let the program listen the required port.
