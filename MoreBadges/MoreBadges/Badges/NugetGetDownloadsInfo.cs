@@ -8,9 +8,9 @@ public sealed record NeatNumberPair(string Normal, string Short)
     {
         var shortMessage = number switch
         {
-            > 1_000_000_000 => $"{number / 100_000_000 / 10.0:F1}B",
-            > 1_000_000     => $"{number / 100_000     / 10.0:F1}M",
-            > 1_000         => $"{number / 100         / 10.0:F1}K",
+            > 1_000_000_000 => $"{number / 100_000_000 / 10.0:F1} B",
+            > 1_000_000     => $"{number / 100_000     / 10.0:F1} M",
+            > 1_000         => $"{number / 100         / 10.0:F1} K",
             _               => $"{number}"
         };
         return new(number.ToString(), shortMessage);
