@@ -2,9 +2,10 @@
 using NuGet.Protocol;
 using NuGet.Protocol.Core.Types;
 using System.Collections.Specialized;
+using System.Globalization;
 using System.Net;
 
-public sealed record NugetInfo(string Normal, string Short, string Packages)
+public sealed record NugetInfo(string Normal, string Short, string NormalSplit, string Packages)
 {
     public static NugetInfo FromLong(long number, int packageCount)
     {
@@ -15,7 +16,11 @@ public sealed record NugetInfo(string Normal, string Short, string Packages)
             > 1_000         => $"{number / 100         / 10.0:F1} K",
             _               => $"{number}"
         };
-        return new(number.ToString(), shortMessage, packageCount.ToString());
+        // from https://stackoverflow.com/questions/17527847/how-would-i-separate-thousands-with-space-in-c-sharp
+        var nfi = (NumberFormatInfo)CultureInfo.InvariantCulture.NumberFormat.Clone();
+        nfi.NumberGroupSeparator = " ";
+        var normalSplit = number.ToString("#,0", nfi);
+        return new(number.ToString(), shortMessage, normalSplit, packageCount.ToString());
     }
 }
 
