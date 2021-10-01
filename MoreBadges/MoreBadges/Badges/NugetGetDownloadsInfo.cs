@@ -26,12 +26,14 @@ public sealed record NugetInfo(string Normal, string Short, string NormalSplit, 
 
 public sealed class NugetGetDownloadsInfo : BadgeInfoGetter<string, NugetInfo>
 {
-    private readonly ILogger logger;
-
-    public NugetGetDownloadsInfo(IWriterReader writerReader, ILogger logger)
-        : base("nugetDownloadInfo", writerReader, TimeSpan.FromHours(3))
+    public NugetGetDownloadsInfo(IWriterReader writerReader, IExtendedLogger logger)
+        : base(
+            "nugetDownloadInfo", 
+            writerReader, 
+            TimeSpan.FromHours(3),
+            logger)
     {
-        this.logger = logger;
+        
     }
 
     protected override async Task<NugetInfo> GetInfoActive(string parameters)

@@ -8,7 +8,7 @@ server.Prefixes.Add("http://+:11456/");
 
 var cachePath = args.Length > 0 ? args[0] : "./caches";
 
-ILogger logger = new DebugLogger();
+var logger = new DebugLogger();
 logger.LogInformation($"Using path {cachePath} for caching");
 logger.LogInformation($"Absolute path for caching: {Path.GetFullPath(cachePath)}");
 
@@ -26,6 +26,8 @@ while (true)
     var request = context.Request;
     var response = context.Response;
     var query = request.QueryString;
+    if (request.Url?.AbsoluteUri.Contains("favicon.ico") ?? false)
+        continue;
 
     BaseBadgeInfoGetter? runner = query["badge"] switch
     {

@@ -1,6 +1,4 @@
-﻿using System.Net;
-using System.Collections.Specialized;
-using NuGet.Common;
+﻿using NuGet.Common;
 
 public abstract class BadgeInfoGetter<TKey, TValue> : BaseBadgeInfoGetter
 {
@@ -10,21 +8,33 @@ public abstract class BadgeInfoGetter<TKey, TValue> : BaseBadgeInfoGetter
     private readonly string name;
     private readonly IWriterReader writerReader;
     private readonly TimeSpan cacheLifetime;
+    protected readonly IExtendedLogger logger;
 
-    public BadgeInfoGetter(string name, IWriterReader writerReader, TimeSpan cacheLifetime)
+    public BadgeInfoGetter(string name, IWriterReader writerReader, TimeSpan cacheLifetime, IExtendedLogger logger)
     {
         this.name = name;
         this.writerReader = writerReader;
         this.cacheLifetime = cacheLifetime;
+        this.logger = logger;
     }
 
     private string? GetValidatedValue(string key)
     {
         if (writerReader.Read(name, key) is not { } res)
+        {
+            logger.LogNegative($"Cache miss. No cache found for {key}");
             return null;
+        }
         var obj = Serializer.Decode<CacheObject>(res);
-        if (obj.Timestamp - DateTime.Now < cacheLifetime)
+        var cacheAge = DateTime.Now - obj.Timestamp;
+        logger.LogInformation($"Cache as old as {cacheAge} was found");
+        if (cacheAge < cacheLifetime)
+        {
+            logger.LogPositive($"Cache hit. It's younger than {cacheLifetime}, so using it");
             return obj.Value;
+        }
+        logger.LogNegative($"Cache miss");
+        logger.LogInformation($"Too old for max cache life time of {cacheLifetime}");
         return null;
     }
 

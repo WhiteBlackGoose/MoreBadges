@@ -1,5 +1,4 @@
-﻿
-using NuGet.Common;
+﻿using NuGet.Common;
 
 public interface IWriterReader
 {
@@ -43,65 +42,5 @@ public sealed record DebugWriterReader(string Path, ILogger Logger) : IWriterRea
         if (res is not null)
             Logger.LogInformation($"Found cache on {host}:{key}");
         return res;
-    }
-}
-
-public sealed class DebugLogger : ILogger
-{
-    public void LogDebug(string data)
-    {
-        Console.WriteLine($"Logging debug: {data}");
-    }
-
-    public void LogVerbose(string data)
-    {
-        Console.WriteLine($"Logging verbose: {data}");
-    }
-
-    public void LogInformation(string data)
-    {
-        Console.WriteLine($"Logging information: {data}");
-    }
-
-    public void LogMinimal(string data)
-    {
-        Console.WriteLine($"Logging minimal: {data}");
-    }
-
-    public void LogWarning(string data)
-    {
-        Console.WriteLine($"Logging warning: {data}");
-    }
-
-    public void LogError(string data)
-    {
-        Console.WriteLine($"Logging error: {data}");
-    }
-
-    public void LogInformationSummary(string data)
-    {
-        Console.WriteLine($"Logging information summary: {data}");
-    }
-
-    public void Log(LogLevel level, string data)
-    {
-        Console.WriteLine($"Logging {level}: {data}");
-    }
-
-    public Task LogAsync(LogLevel level, string data)
-    {
-        Console.WriteLine($"Logging {level}: {data}");
-        return Task.CompletedTask;
-    }
-
-    public void Log(ILogMessage message)
-    {
-        Console.WriteLine($"Message: {message.Message}");
-    }
-
-    public Task LogAsync(ILogMessage message)
-    {
-        Console.WriteLine($"Message: {message.Message}");
-        return Task.CompletedTask;
     }
 }
