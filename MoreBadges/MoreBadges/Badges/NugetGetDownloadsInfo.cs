@@ -1,9 +1,7 @@
-﻿using NuGet.Common;
-using NuGet.Protocol;
+﻿using NuGet.Protocol;
 using NuGet.Protocol.Core.Types;
 using System.Collections.Specialized;
 using System.Globalization;
-using System.Net;
 
 public sealed record NugetInfo(string Normal, string Short, string NormalSplit, string Packages)
 {
@@ -31,10 +29,7 @@ public sealed class NugetGetDownloadsInfo : BadgeInfoGetter<string, NugetInfo>
             "nugetDownloadInfo", 
             writerReader, 
             TimeSpan.FromHours(3),
-            logger)
-    {
-        
-    }
+            logger) { }
 
     protected override async Task<NugetInfo> GetInfoActive(string parameters)
     {
