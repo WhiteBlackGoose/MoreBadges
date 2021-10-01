@@ -19,7 +19,16 @@ Here's a list of badges available.
 
 ### Nuget downloads per user/organization
 
-`badge=nugetdownloads&user=WhiteBlackGoose`
+`badge=nugetdownloads`
+
+Here's an example for user `Mutagene`:
+
+| `query=` | Badge |
+|:--------:|:-----:|
+| Normal   | ![](https://img.shields.io/badge/dynamic/json?url=https%3A//morebadges.tk/%3fbadge=nugetdownloads%26user%3dMutagene&query=Normal&label=Nuget+downloads&logo=nuget) |
+| Short    | ![](https://img.shields.io/badge/dynamic/json?url=https%3A//morebadges.tk/%3fbadge=nugetdownloads%26user%3dMutagene&query=Short&label=Nuget+downloads&logo=nuget) |
+| NormalSplit    | ![](https://img.shields.io/badge/dynamic/json?url=https%3A//morebadges.tk/%3fbadge=nugetdownloads%26user%3dMutagene&query=NormalSplit&label=Nuget+downloads&logo=nuget) |
+| Packages    | ![](https://img.shields.io/badge/dynamic/json?url=https%3A//morebadges.tk/%3fbadge=nugetdownloads%26user%3dMutagene&query=Packages&label=Nuget+packages&logo=nuget) |
 
 Replace `microsoft` with the username:
 ```
